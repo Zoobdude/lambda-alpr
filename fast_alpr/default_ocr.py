@@ -17,10 +17,7 @@ from fast_alpr.base import BaseOCR, OcrResult
 
 class DefaultOCR(BaseOCR):
     """
-    Default OCR class for license plate recognition using ONNX models.
-
-    This class utilizes the `LicensePlateRecognizer` from the `fast-plate-ocr` package
-    to perform OCR on cropped license plate images.
+    Default OCR class for license plate recognition using `fast-plate-ocr` models.
     """
 
     def __init__(
