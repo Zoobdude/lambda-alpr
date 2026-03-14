@@ -27,6 +27,8 @@ class DetectionResult:
 class OcrResult:
     text: str
     confidence: float | list[float]
+    region: str | None = None
+    region_confidence: float | None = None
 
 
 class BaseDetector(ABC):

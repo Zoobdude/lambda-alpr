@@ -47,7 +47,7 @@ class ALPR:
         detector_conf_thresh: float = 0.4,
         detector_providers: Sequence[str | tuple[str, dict]] | None = None,
         detector_sess_options: ort.SessionOptions = None,
-        ocr_model: OcrModel | None = "cct-xs-v1-global-model",
+        ocr_model: OcrModel | None = "cct-xs-v2-global-model",
         ocr_device: Literal["cuda", "cpu", "auto"] = "auto",
         ocr_providers: Sequence[str | tuple[str, dict]] | None = None,
         ocr_sess_options: ort.SessionOptions | None = None,
@@ -161,6 +161,8 @@ class ALPR:
                 continue
             # Remove padding symbols if any
             plate_text = ocr_result.text
+            if ocr_result.region:
+                plate_text = f"{ocr_result.region} {plate_text}"
             confidence: float = (
                 statistics.mean(ocr_result.confidence)
                 if isinstance(ocr_result.confidence, list)

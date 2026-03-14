@@ -76,13 +76,17 @@ class DefaultOCR(BaseOCR):
             return None
         if self.ocr_model.config.image_color_mode == "grayscale":
             cropped_plate = cv2.cvtColor(cropped_plate, cv2.COLOR_BGR2GRAY)
-        plate_text, probabilities = self.ocr_model.run(cropped_plate, return_confidence=True)
-        if not isinstance(plate_text, list):
-            raise TypeError(f"Expected plate_text to be a list, got {type(plate_text).__name__}")
-        if not isinstance(probabilities, np.ndarray):
-            raise TypeError(
-                f"Expected probabilities to be a numpy ndarray, got {type(probabilities).__name__}"
-            )
-        # fast_plate_ocr uses '_' padding symbol
-        plate_text = plate_text.pop().replace("_", "")
-        return OcrResult(text=plate_text, confidence=float(np.mean(probabilities)))
+        elif self.ocr_model.config.image_color_mode == "rgb":
+            cropped_plate = cv2.cvtColor(cropped_plate, cv2.COLOR_BGR2RGB)
+        prediction = self.ocr_model.run_one(cropped_plate, return_confidence=True)
+
+        char_probs = prediction.char_probs
+        confidence: float | list[float] = (
+            0.0 if char_probs is None else [float(x) for x in char_probs.tolist()]
+        )
+        return OcrResult(
+            text=prediction.plate,
+            confidence=confidence,
+            region=prediction.region,
+            region_confidence=prediction.region_prob,
+        )

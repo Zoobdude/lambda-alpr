@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.10, <4.0"
 resolution-markers = [
     "python_full_version >= '3.12' and sys_platform == 'darwin'",
@@ -209,7 +209,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "fast-plate-ocr", specifier = ">=1.0.0" },
+    { name = "fast-plate-ocr", specifier = ">=1.1.0" },
     { name = "onnxruntime", marker = "extra == 'onnx'", specifier = ">=1.19.2" },
     { name = "onnxruntime-directml", marker = "extra == 'onnx-directml'", specifier = ">=1.19.2" },
     { name = "onnxruntime-gpu", marker = "extra == 'onnx-gpu'", specifier = ">=1.19.2" },
@@ -237,18 +237,18 @@ test = [{ name = "pytest" }]
 
 [[package]]
 name = "fast-plate-ocr"
-version = "1.0.0"
+version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy" },
-    { name = "opencv-python" },
+    { name = "opencv-python-headless" },
     { name = "pyyaml" },
     { name = "rich" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e3/0a/414d991230be290afb4e1b1fa9524d6bcc81cd90c45775d5253f9ffdc2df/fast_plate_ocr-1.0.0.tar.gz", hash = "sha256:53a8df05891842848d07d4ce5a96354de2653f0bb0135f8f99a5fc638f527253", size = 42964, upload-time = "2025-06-30T02:53:15.55Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ab/23/0cf6a5d271e539c4660044b875eae6ef2fd26e682359d05b504f6e953bc1/fast_plate_ocr-1.1.0.tar.gz", hash = "sha256:911054d56b89d95ad6e56eae898a1c981a98d86510e4674595805de233645aa2", size = 316036, upload-time = "2026-03-14T20:22:21.214Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7e/55/541d8250a35dd7a5957db4f1cf591d887ef96b549b9c4e2ea3f25b69a8a9/fast_plate_ocr-1.0.0-py3-none-any.whl", hash = "sha256:1fe4f9099a50b51e7bc6e7ef8afc2ba2415465275ee9acaefc7fd8af8cf3534a", size = 53691, upload-time = "2025-06-30T02:53:14.003Z" },
+    { url = "https://files.pythonhosted.org/packages/a5/e9/c806e94c98826234c5d04f1591cb9ed18f09a54c9a0fd907c0e0d7537468/fast_plate_ocr-1.1.0-py3-none-any.whl", hash = "sha256:98eba340ab90a04cf5daa693320942ce7eeb5977529143df6bb41afd08239062", size = 62334, upload-time = "2026-03-14T20:22:19.752Z" },
 ]
 
 [[package]]

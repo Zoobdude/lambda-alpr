@@ -19,7 +19,7 @@ ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
 def alpr_fixture() -> ALPR:
     return ALPR(
         detector_model="yolo-v9-t-384-license-plate-end2end",
-        ocr_model="cct-xs-v1-global-model",
+        ocr_model="cct-xs-v2-global-model",
     )
 
 
@@ -30,8 +30,10 @@ def alpr_fixture() -> ALPR:
 @pytest.mark.parametrize(
     "ocr_model",
     [
-        "cct-xs-v1-global-model",
+        "cct-s-v2-global-model",
+        "cct-xs-v2-global-model",
         "cct-s-v1-global-model",
+        "cct-xs-v1-global-model",
         "global-plates-mobile-vit-v2-model",
         "european-plates-mobile-vit-v2-model",
     ],
