@@ -52,5 +52,5 @@ annotated_frame = alpr.draw_predictions(frame)
 
 Annotated frame:
 
-<img alt="ALPR Draw Predictions" src="https://raw.githubusercontent.com/ankandrew/fast-alpr/0a6076dcb8d9084514fe47e8abaaeb77cae45f8e/assets/alpr_draw_predictions.png"/>
+<img alt="ALPR Draw Predictions" src="https://github.com/ankandrew/fast-alpr/releases/download/assets/alpr_draw_predictions.webp"/>
 
