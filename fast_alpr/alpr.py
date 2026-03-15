@@ -32,6 +32,16 @@ class ALPRResult:
     ocr: OcrResult | None
 
 
+@dataclass(frozen=True, slots=True)
+class DrawPredictionsResult:
+    """
+    Dataclass to hold the annotated frame and the ALPR results used to draw it.
+    """
+
+    image: np.ndarray
+    results: list[ALPRResult]
+
+
 class ALPR:
     """
     Automatic License Plate Recognition (ALPR) system class.
@@ -128,7 +138,7 @@ class ALPR:
             alpr_results.append(alpr_result)
         return alpr_results
 
-    def draw_predictions(self, frame: np.ndarray | str) -> np.ndarray:
+    def draw_predictions(self, frame: np.ndarray | str) -> DrawPredictionsResult:
         """
         Draws detections and OCR results on the frame.
 
@@ -136,7 +146,8 @@ class ALPR:
             frame: The original frame or image path.
 
         Returns:
-            The frame with detections and OCR results drawn.
+            A DrawPredictionsResult containing the frame with detections and OCR results drawn,
+            along with the ALPR results used to render the annotations.
         """
         # If frame is a string, assume it's an image path and load it
         if isinstance(frame, str):
@@ -215,4 +226,4 @@ class ALPR:
                     lineType=cv2.LINE_AA,
                 )
 
-        return img
+        return DrawPredictionsResult(image=img, results=alpr_results)

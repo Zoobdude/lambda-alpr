@@ -46,11 +46,12 @@ alpr = ALPR(
 image_path = "assets/test_image.png"
 frame = cv2.imread(image_path)
 
-# Draw predictions on the image
-annotated_frame = alpr.draw_predictions(frame)
+# Draw predictions on the image and get the ALPR results
+drawn = alpr.draw_predictions(frame)
+annotated_frame = drawn.image
+results = drawn.results
 ```
 
 Annotated frame:
 
 <img alt="ALPR Draw Predictions" src="https://github.com/ankandrew/fast-alpr/releases/download/assets/alpr_draw_predictions.webp"/>
-
