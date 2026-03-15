@@ -6,27 +6,25 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 import numpy as np
-
-
-@dataclass(frozen=True)
-class BoundingBox:
-    x1: int
-    y1: int
-    x2: int
-    y2: int
-
-
-@dataclass(frozen=True)
-class DetectionResult:
-    label: str
-    confidence: float
-    bounding_box: BoundingBox
+from open_image_models.detection.core.base import DetectionResult
 
 
 @dataclass(frozen=True)
 class OcrResult:
+    """
+    OCR output for one cropped plate image.
+
+    Attributes:
+        text: Recognized plate text.
+        confidence: OCR confidence as one value or one value per character.
+        region: Optional region or country prediction.
+        region_confidence: Confidence for the region prediction.
+    """
+
     text: str
     confidence: float | list[float]
+    region: str | None = None
+    region_confidence: float | None = None
 
 
 class BaseDetector(ABC):

@@ -10,7 +10,7 @@ from fast_alpr import ALPR
 # You can also initialize the ALPR with custom plate detection and OCR models.
 alpr = ALPR(
     detector_model="yolo-v9-t-384-license-plate-end2end",
-    ocr_model="cct-xs-v1-global-model",
+    ocr_model="cct-xs-v2-global-model",
 )
 
 # The "assets/test_image.png" can be found in repo root dir
@@ -39,18 +39,19 @@ from fast_alpr import ALPR
 # Initialize the ALPR
 alpr = ALPR(
     detector_model="yolo-v9-t-384-license-plate-end2end",
-    ocr_model="cct-xs-v1-global-model",
+    ocr_model="cct-xs-v2-global-model",
 )
 
 # Load the image
 image_path = "assets/test_image.png"
 frame = cv2.imread(image_path)
 
-# Draw predictions on the image
-annotated_frame = alpr.draw_predictions(frame)
+# Draw predictions on the image and get the ALPR results
+drawn = alpr.draw_predictions(frame)
+annotated_frame = drawn.image
+results = drawn.results
 ```
 
 Annotated frame:
 
-<img alt="ALPR Draw Predictions" src="https://raw.githubusercontent.com/ankandrew/fast-alpr/0a6076dcb8d9084514fe47e8abaaeb77cae45f8e/assets/alpr_draw_predictions.png"/>
-
+<img alt="ALPR Draw Predictions" src="https://github.com/ankandrew/fast-alpr/releases/download/assets/alpr_draw_predictions.webp"/>

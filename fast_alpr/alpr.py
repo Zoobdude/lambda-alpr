@@ -25,11 +25,29 @@ from fast_alpr.default_ocr import DefaultOCR
 @dataclass(frozen=True)
 class ALPRResult:
     """
-    Dataclass to hold the results of detection and OCR for a license plate.
+    Detection and OCR output for one license plate.
+
+    Attributes:
+        detection: Detector output for the plate.
+        ocr: OCR output for the plate, or None if OCR does not return a result.
     """
 
     detection: DetectionResult
     ocr: OcrResult | None
+
+
+@dataclass(frozen=True, slots=True)
+class DrawPredictionsResult:
+    """
+    Return value from draw_predictions.
+
+    Attributes:
+        image: The input image with boxes and text drawn on it.
+        results: The ALPR results used to draw the annotations.
+    """
+
+    image: np.ndarray
+    results: list[ALPRResult]
 
 
 class ALPR:
@@ -47,7 +65,7 @@ class ALPR:
         detector_conf_thresh: float = 0.4,
         detector_providers: Sequence[str | tuple[str, dict]] | None = None,
         detector_sess_options: ort.SessionOptions = None,
-        ocr_model: OcrModel | None = "cct-xs-v1-global-model",
+        ocr_model: OcrModel | None = "cct-xs-v2-global-model",
         ocr_device: Literal["cuda", "cpu", "auto"] = "auto",
         ocr_providers: Sequence[str | tuple[str, dict]] | None = None,
         ocr_sess_options: ort.SessionOptions | None = None,
@@ -100,13 +118,13 @@ class ALPR:
 
     def predict(self, frame: np.ndarray | str) -> list[ALPRResult]:
         """
-        Returns all recognized license plates from a frame.
+        Run plate detection and OCR on an image.
 
         Parameters:
             frame: Unprocessed frame (Colors in order: BGR) or image path.
 
         Returns:
-            A list of ALPRResult objects containing detection and OCR results.
+            A list of ALPRResult objects, one for each detected plate.
         """
         if isinstance(frame, str):
             img_path = frame
@@ -128,15 +146,15 @@ class ALPR:
             alpr_results.append(alpr_result)
         return alpr_results
 
-    def draw_predictions(self, frame: np.ndarray | str) -> np.ndarray:
+    def draw_predictions(self, frame: np.ndarray | str) -> DrawPredictionsResult:
         """
-        Draws detections and OCR results on the frame.
+        Draw detections and OCR results on an image.
 
         Parameters:
             frame: The original frame or image path.
 
         Returns:
-            The frame with detections and OCR results drawn.
+            A DrawPredictionsResult with the annotated image and the ALPR results.
         """
         # If frame is a string, assume it's an image path and load it
         if isinstance(frame, str):
@@ -159,36 +177,60 @@ class ALPR:
             cv2.rectangle(img, (x1, y1), (x2, y2), (36, 255, 12), 2)
             if ocr_result is None or not ocr_result.text or not ocr_result.confidence:
                 continue
-            # Remove padding symbols if any
-            plate_text = ocr_result.text
             confidence: float = (
                 statistics.mean(ocr_result.confidence)
                 if isinstance(ocr_result.confidence, list)
                 else ocr_result.confidence
             )
-            display_text = f"{plate_text} {confidence * 100:.2f}%"
-            font_scale = 1.25
-            # Draw black background for better readability
-            cv2.putText(
-                img=img,
-                text=display_text,
-                org=(x1, y1 - 10),
-                fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                fontScale=font_scale,
-                color=(0, 0, 0),
-                thickness=6,
-                lineType=cv2.LINE_AA,
-            )
-            # Draw white text
-            cv2.putText(
-                img=img,
-                text=display_text,
-                org=(x1, y1 - 10),
-                fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                fontScale=font_scale,
-                color=(255, 255, 255),
-                thickness=2,
-                lineType=cv2.LINE_AA,
-            )
+            font_scale = min(1.25, max(0.4, img.shape[1] / 1000))
+            text_thickness = 1 if font_scale < 0.75 else 2
+            outline_thickness = text_thickness + max(3, round(font_scale * 3))
+            display_lines = [f"{ocr_result.text} {confidence * 100:.0f}%"]
+            if ocr_result.region:
+                region_text = ocr_result.region
+                if ocr_result.region_confidence is not None:
+                    region_text = f"{region_text} {ocr_result.region_confidence * 100:.0f}%"
+                display_lines.insert(0, region_text)
 
-        return img
+            _, text_height = cv2.getTextSize(
+                display_lines[0], cv2.FONT_HERSHEY_SIMPLEX, font_scale, text_thickness
+            )[0]
+            line_gap = max(14, round(text_height * 0.6))
+            line_height = text_height + line_gap
+            text_y = y1 - 10 - ((len(display_lines) - 1) * line_height)
+            if text_y - text_height < 0:
+                text_y = y2 + text_height + 10
+
+            for idx, line in enumerate(display_lines):
+                text_width, current_text_height = cv2.getTextSize(
+                    line, cv2.FONT_HERSHEY_SIMPLEX, font_scale, text_thickness
+                )[0]
+                text_x = min(max(x1, 5), max(5, img.shape[1] - text_width - 5))
+                current_y = min(
+                    max(text_y + (idx * line_height), current_text_height + 5),
+                    img.shape[0] - 5,
+                )
+                # Draw black background for better readability
+                cv2.putText(
+                    img=img,
+                    text=line,
+                    org=(text_x, current_y),
+                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                    fontScale=font_scale,
+                    color=(0, 0, 0),
+                    thickness=outline_thickness,
+                    lineType=cv2.LINE_AA,
+                )
+                # Draw white text
+                cv2.putText(
+                    img=img,
+                    text=line,
+                    org=(text_x, current_y),
+                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                    fontScale=font_scale,
+                    color=(255, 255, 255),
+                    thickness=text_thickness,
+                    lineType=cv2.LINE_AA,
+                )
+
+        return DrawPredictionsResult(image=img, results=alpr_results)

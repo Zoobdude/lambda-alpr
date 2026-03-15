@@ -19,7 +19,7 @@ ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
 def alpr_fixture() -> ALPR:
     return ALPR(
         detector_model="yolo-v9-t-384-license-plate-end2end",
-        ocr_model="cct-xs-v1-global-model",
+        ocr_model="cct-xs-v2-global-model",
     )
 
 
@@ -30,8 +30,10 @@ def alpr_fixture() -> ALPR:
 @pytest.mark.parametrize(
     "ocr_model",
     [
-        "cct-xs-v1-global-model",
+        "cct-s-v2-global-model",
+        "cct-xs-v2-global-model",
         "cct-s-v1-global-model",
+        "cct-xs-v1-global-model",
         "global-plates-mobile-vit-v2-model",
         "european-plates-mobile-vit-v2-model",
     ],
@@ -84,16 +86,18 @@ def test_draw_predictions(img_path: Path, alpr: ALPR) -> None:
 
     # ndarray input
     drawn_nd = alpr.draw_predictions(im.copy())
-    assert isinstance(drawn_nd, np.ndarray)
-    assert drawn_nd.shape == (h, w, c)
+    assert isinstance(drawn_nd.image, np.ndarray)
+    assert drawn_nd.image.shape == (h, w, c)
+    assert drawn_nd.results
 
-    diff_nd = cv2.absdiff(drawn_nd, im)
+    diff_nd = cv2.absdiff(drawn_nd.image, im)
     assert int(diff_nd.sum()) > 0
 
     # string path input
     drawn_path = alpr.draw_predictions(str(img_path))
-    assert isinstance(drawn_path, np.ndarray)
-    assert drawn_path.shape == (h, w, c)
+    assert isinstance(drawn_path.image, np.ndarray)
+    assert drawn_path.image.shape == (h, w, c)
+    assert drawn_path.results
 
-    diff_path = cv2.absdiff(drawn_path, im)
+    diff_path = cv2.absdiff(drawn_path.image, im)
     assert int(diff_path.sum()) > 0

@@ -9,7 +9,7 @@ import onnxruntime as ort
 from open_image_models import LicensePlateDetector
 from open_image_models.detection.core.hub import PlateDetectorModel
 
-from fast_alpr.base import BaseDetector, BoundingBox, DetectionResult
+from fast_alpr.base import BaseDetector, DetectionResult
 
 
 class DefaultDetector(BaseDetector):
@@ -58,18 +58,4 @@ class DefaultDetector(BaseDetector):
             A list of detection results, each containing the label,
             confidence, and bounding box of a detected license plate.
         """
-        detections = self.detector.predict(frame)
-        detection_results = [
-            DetectionResult(
-                label=detection.label,
-                confidence=detection.confidence,
-                bounding_box=BoundingBox(
-                    x1=detection.bounding_box.x1,
-                    y1=detection.bounding_box.y1,
-                    x2=detection.bounding_box.x2,
-                    y2=detection.bounding_box.y2,
-                ),
-            )
-            for detection in detections
-        ]
-        return detection_results
+        return self.detector.predict(frame)
