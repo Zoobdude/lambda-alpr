@@ -24,22 +24,30 @@ from fast_alpr.default_ocr import DefaultOCR
 
 @dataclass(frozen=True)
 class ALPRResult:
-    """Detection and OCR output for one license plate."""
+    """
+    Detection and OCR output for one license plate.
+
+    Attributes:
+        detection: Detector output for the plate.
+        ocr: OCR output for the plate, or None if OCR does not return a result.
+    """
 
     detection: DetectionResult
-    """Detector output for the plate."""
     ocr: OcrResult | None
-    """OCR output for the plate, or None if OCR does not return a result."""
 
 
 @dataclass(frozen=True, slots=True)
 class DrawPredictionsResult:
-    """Return value from draw_predictions."""
+    """
+    Return value from draw_predictions.
+
+    Attributes:
+        image: The input image with boxes and text drawn on it.
+        results: The ALPR results used to draw the annotations.
+    """
 
     image: np.ndarray
-    """The input image with boxes and text drawn on it."""
     results: list[ALPRResult]
-    """The ALPR results used to draw the annotations."""
 
 
 class ALPR:

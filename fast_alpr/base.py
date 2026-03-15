@@ -11,16 +11,20 @@ from open_image_models.detection.core.base import DetectionResult
 
 @dataclass(frozen=True)
 class OcrResult:
-    """OCR output for one cropped plate image."""
+    """
+    OCR output for one cropped plate image.
+
+    Attributes:
+        text: Recognized plate text.
+        confidence: OCR confidence as one value or one value per character.
+        region: Optional region or country prediction.
+        region_confidence: Confidence for the region prediction.
+    """
 
     text: str
-    """Recognized plate text."""
     confidence: float | list[float]
-    """OCR confidence as one value or one value per character."""
     region: str | None = None
-    """Optional region or country prediction."""
     region_confidence: float | None = None
-    """Confidence for the region prediction."""
 
 
 class BaseDetector(ABC):
