@@ -166,7 +166,7 @@ class ALPR:
             )
             font_scale = min(1.25, max(0.4, img.shape[1] / 1000))
             text_thickness = 1 if font_scale < 0.75 else 2
-            outline_thickness = text_thickness + 2
+            outline_thickness = text_thickness + max(3, round(font_scale * 3))
             display_lines = [f"{ocr_result.text} {confidence * 100:.0f}%"]
             if ocr_result.region:
                 region_text = ocr_result.region
@@ -177,7 +177,8 @@ class ALPR:
             _, text_height = cv2.getTextSize(
                 display_lines[0], cv2.FONT_HERSHEY_SIMPLEX, font_scale, text_thickness
             )[0]
-            line_height = text_height + 10
+            line_gap = max(14, round(text_height * 0.6))
+            line_height = text_height + line_gap
             text_y = y1 - 10 - ((len(display_lines) - 1) * line_height)
             if text_y - text_height < 0:
                 text_y = y2 + text_height + 10
