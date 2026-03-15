@@ -6,32 +6,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 import numpy as np
-
-
-@dataclass(frozen=True)
-class BoundingBox:
-    """Bounding box coordinates in pixel space."""
-
-    x1: int
-    """Left coordinate."""
-    y1: int
-    """Top coordinate."""
-    x2: int
-    """Right coordinate."""
-    y2: int
-    """Bottom coordinate."""
-
-
-@dataclass(frozen=True)
-class DetectionResult:
-    """One plate detection from the detector."""
-
-    label: str
-    """Detected class label."""
-    confidence: float
-    """Detection confidence from 0.0 to 1.0."""
-    bounding_box: BoundingBox
-    """Plate location in the image."""
+from open_image_models.detection.core.base import DetectionResult
 
 
 @dataclass(frozen=True)

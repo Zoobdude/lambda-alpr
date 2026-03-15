@@ -19,6 +19,9 @@ This page shows the public API of FastALPR.
 - `detection`: box, label, and detection confidence
 - `ocr`: recognized text and OCR confidence, or `None`
 
+`BoundingBox` and `DetectionResult` come from `open-image-models`.
+You can import them from `fast_alpr`, but their implementation lives in `open-image-models`.
+
 `DrawPredictionsResult` contains:
 
 - `image`: the image with boxes and text drawn on it
