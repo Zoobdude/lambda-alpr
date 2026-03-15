@@ -159,38 +159,59 @@ class ALPR:
             cv2.rectangle(img, (x1, y1), (x2, y2), (36, 255, 12), 2)
             if ocr_result is None or not ocr_result.text or not ocr_result.confidence:
                 continue
-            # Remove padding symbols if any
-            plate_text = ocr_result.text
-            if ocr_result.region:
-                plate_text = f"{ocr_result.region} {plate_text}"
             confidence: float = (
                 statistics.mean(ocr_result.confidence)
                 if isinstance(ocr_result.confidence, list)
                 else ocr_result.confidence
             )
-            display_text = f"{plate_text} {confidence * 100:.2f}%"
-            font_scale = 1.25
-            # Draw black background for better readability
-            cv2.putText(
-                img=img,
-                text=display_text,
-                org=(x1, y1 - 10),
-                fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                fontScale=font_scale,
-                color=(0, 0, 0),
-                thickness=6,
-                lineType=cv2.LINE_AA,
-            )
-            # Draw white text
-            cv2.putText(
-                img=img,
-                text=display_text,
-                org=(x1, y1 - 10),
-                fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                fontScale=font_scale,
-                color=(255, 255, 255),
-                thickness=2,
-                lineType=cv2.LINE_AA,
-            )
+            font_scale = min(1.25, max(0.4, img.shape[1] / 1000))
+            text_thickness = 1 if font_scale < 0.75 else 2
+            outline_thickness = text_thickness + 2
+            display_lines = [f"{ocr_result.text} {confidence * 100:.0f}%"]
+            if ocr_result.region:
+                region_text = ocr_result.region
+                if ocr_result.region_confidence is not None:
+                    region_text = f"{region_text} {ocr_result.region_confidence * 100:.0f}%"
+                display_lines.insert(0, region_text)
+
+            _, text_height = cv2.getTextSize(
+                display_lines[0], cv2.FONT_HERSHEY_SIMPLEX, font_scale, text_thickness
+            )[0]
+            line_height = text_height + 10
+            text_y = y1 - 10 - ((len(display_lines) - 1) * line_height)
+            if text_y - text_height < 0:
+                text_y = y2 + text_height + 10
+
+            for idx, line in enumerate(display_lines):
+                text_width, current_text_height = cv2.getTextSize(
+                    line, cv2.FONT_HERSHEY_SIMPLEX, font_scale, text_thickness
+                )[0]
+                text_x = min(max(x1, 5), max(5, img.shape[1] - text_width - 5))
+                current_y = min(
+                    max(text_y + (idx * line_height), current_text_height + 5),
+                    img.shape[0] - 5,
+                )
+                # Draw black background for better readability
+                cv2.putText(
+                    img=img,
+                    text=line,
+                    org=(text_x, current_y),
+                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                    fontScale=font_scale,
+                    color=(0, 0, 0),
+                    thickness=outline_thickness,
+                    lineType=cv2.LINE_AA,
+                )
+                # Draw white text
+                cv2.putText(
+                    img=img,
+                    text=line,
+                    org=(text_x, current_y),
+                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                    fontScale=font_scale,
+                    color=(255, 255, 255),
+                    thickness=text_thickness,
+                    lineType=cv2.LINE_AA,
+                )
 
         return img
