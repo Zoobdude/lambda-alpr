@@ -24,22 +24,22 @@ from fast_alpr.default_ocr import DefaultOCR
 
 @dataclass(frozen=True)
 class ALPRResult:
-    """
-    Dataclass to hold the results of detection and OCR for a license plate.
-    """
+    """Detection and OCR output for one license plate."""
 
     detection: DetectionResult
+    """Detector output for the plate."""
     ocr: OcrResult | None
+    """OCR output for the plate, or None if OCR does not return a result."""
 
 
 @dataclass(frozen=True, slots=True)
 class DrawPredictionsResult:
-    """
-    Dataclass to hold the annotated frame and the ALPR results used to draw it.
-    """
+    """Return value from draw_predictions."""
 
     image: np.ndarray
+    """The input image with boxes and text drawn on it."""
     results: list[ALPRResult]
+    """The ALPR results used to draw the annotations."""
 
 
 class ALPR:
@@ -110,13 +110,13 @@ class ALPR:
 
     def predict(self, frame: np.ndarray | str) -> list[ALPRResult]:
         """
-        Returns all recognized license plates from a frame.
+        Run plate detection and OCR on an image.
 
         Parameters:
             frame: Unprocessed frame (Colors in order: BGR) or image path.
 
         Returns:
-            A list of ALPRResult objects containing detection and OCR results.
+            A list of ALPRResult objects, one for each detected plate.
         """
         if isinstance(frame, str):
             img_path = frame
@@ -140,14 +140,13 @@ class ALPR:
 
     def draw_predictions(self, frame: np.ndarray | str) -> DrawPredictionsResult:
         """
-        Draws detections and OCR results on the frame.
+        Draw detections and OCR results on an image.
 
         Parameters:
             frame: The original frame or image path.
 
         Returns:
-            A DrawPredictionsResult containing the frame with detections and OCR results drawn,
-            along with the ALPR results used to render the annotations.
+            A DrawPredictionsResult with the annotated image and the ALPR results.
         """
         # If frame is a string, assume it's an image path and load it
         if isinstance(frame, str):

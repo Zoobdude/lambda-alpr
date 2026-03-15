@@ -10,25 +10,42 @@ import numpy as np
 
 @dataclass(frozen=True)
 class BoundingBox:
+    """Bounding box coordinates in pixel space."""
+
     x1: int
+    """Left coordinate."""
     y1: int
+    """Top coordinate."""
     x2: int
+    """Right coordinate."""
     y2: int
+    """Bottom coordinate."""
 
 
 @dataclass(frozen=True)
 class DetectionResult:
+    """One plate detection from the detector."""
+
     label: str
+    """Detected class label."""
     confidence: float
+    """Detection confidence from 0.0 to 1.0."""
     bounding_box: BoundingBox
+    """Plate location in the image."""
 
 
 @dataclass(frozen=True)
 class OcrResult:
+    """OCR output for one cropped plate image."""
+
     text: str
+    """Recognized plate text."""
     confidence: float | list[float]
+    """OCR confidence as one value or one value per character."""
     region: str | None = None
+    """Optional region or country prediction."""
     region_confidence: float | None = None
+    """Confidence for the region prediction."""
 
 
 class BaseDetector(ABC):
