@@ -8,7 +8,7 @@
 [![ONNX Model](https://img.shields.io/badge/model-ONNX-blue?logo=onnx&logoColor=white)](https://onnx.ai/)
 [![Hugging Face Spaces](https://img.shields.io/badge/🤗%20Hugging%20Face-Spaces-orange)](https://huggingface.co/spaces/ankandrew/fast-alpr)
 [![Documentation Status](https://img.shields.io/badge/docs-latest-brightgreen.svg)](https://ankandrew.github.io/fast-alpr/)
-[![Python Version](https://img.shields.io/pypi/pyversions/fast-alpr)](https://www.python.org/)
+[![image](https://img.shields.io/pypi/pyversions/fast-alpr.svg)](https://pypi.python.org/pypi/fast-alpr)
 [![GitHub version](https://img.shields.io/github/v/release/ankandrew/fast-alpr)](https://github.com/ankandrew/fast-alpr/releases)
 [![License](https://img.shields.io/github/license/ankandrew/fast-alpr)](./LICENSE)
 
