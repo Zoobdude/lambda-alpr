@@ -65,6 +65,7 @@ class ALPR:
         detector_conf_thresh: float = 0.4,
         detector_providers: Sequence[str | tuple[str, dict]] | None = None,
         detector_sess_options: ort.SessionOptions = None,
+        detector_model_path: str | os.PathLike | None = None,
         ocr_model: OcrModel | None = "cct-xs-v2-global-model",
         ocr_device: Literal["cuda", "cpu", "auto"] = "auto",
         ocr_providers: Sequence[str | tuple[str, dict]] | None = None,
@@ -80,10 +81,14 @@ class ALPR:
             detector: An instance of BaseDetector. If None, the DefaultDetector is used.
             ocr: An instance of BaseOCR. If None, the DefaultOCR is used.
             detector_model: The name of the detector model or a PlateDetectorModel enum instance.
-                Defaults to "yolo-v9-t-384-license-plate-end2end".
+                Defaults to "yolo-v9-t-384-license-plate-end2end". Ignored when
+                `detector_model_path` is provided.
             detector_conf_thresh: Confidence threshold for the detector.
             detector_providers: Execution providers for the detector.
             detector_sess_options: Session options for the detector.
+            detector_model_path: Path to a custom ONNX detector model file. When provided, the
+                model is loaded from this path instead of being downloaded from the hub, and
+                `detector_model` is ignored.
             ocr_model: The name of the OCR model from the model hub. This can be none and
                 `ocr_model_path` and `ocr_config_path` parameters are expected to pass them to
                 `fast-plate-ocr` library.
@@ -103,6 +108,7 @@ class ALPR:
             conf_thresh=detector_conf_thresh,
             providers=detector_providers,
             sess_options=detector_sess_options,
+            model_path=detector_model_path,
         )
 
         # Initialize the OCR
